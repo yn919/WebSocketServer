@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WebSocketServer.ViewModels;
 
 namespace WebSocketServer.Views
 {
@@ -20,9 +21,23 @@ namespace WebSocketServer.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private MainViewModel mainViewModel { get; }
         public MainWindow()
         {
             InitializeComponent();
+
+            this.Closing += MainWindow_Closing;
+
+            mainViewModel = new MainViewModel();
+            mainViewModel.Start();
+            DataContext = mainViewModel;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            mainViewModel.End();
+            mainViewModel.Dispose();
         }
     }
 }

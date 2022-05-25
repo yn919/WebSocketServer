@@ -8,5 +8,21 @@ namespace WebSocketServer.Models
 {
     class MainModel
     {
+        public WSServer wsServer { get; }
+
+        public MainModel()
+        {
+            wsServer = new WSServer();
+        }
+
+        public async Task Start()
+        {
+            await wsServer.StartAsync();
+        }
+
+        public async Task End()
+        {
+            await wsServer.StopAsync();
+        }
     }
 }

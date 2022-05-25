@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="WebSocketServer.Views.WSServerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WebSocketServer.Views"
+             mc:Ignorable="d" 
+             >
+    <DockPanel Margin="10">
+        <GroupBox DockPanel.Dock="Top" Header="config" Margin="0,5">
+            <DockPanel Margin="0,5">
+                <Label DockPanel.Dock="Left" Content="Port：" Width="80"/>
+                <TextBox Text="{Binding port.Value}" />
+            </DockPanel>
+        </GroupBox>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5,0,5,10">
+            <Button Content="Restart" Command="{Binding restartCommand}" Width="80" />
+            <Label Content="{Binding connectedState.Value}" Foreground="{Binding connectedStateColor.Value}" />
+        </StackPanel>
+        <GroupBox DockPanel.Dock="Top" Header="send" Margin="0,5">
+            <DockPanel>
+                <Button DockPanel.Dock="Bottom" Command="{Binding sendCommand}" Width="50"
+                        Content="send" Margin="5,5,5,0" HorizontalAlignment="Right" />
+                <TextBox Text="{Binding sendMessage.Value}" />
+            </DockPanel>
+        </GroupBox>
+        <GroupBox Header="receive" Margin="0,5">
+            <TextBox Text="{Binding receiveMessage.Value}" IsReadOnly="True" />
+        </GroupBox>
+    </DockPanel>
+</UserControl>
