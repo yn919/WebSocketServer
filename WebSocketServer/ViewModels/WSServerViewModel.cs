@@ -38,7 +38,10 @@ namespace WebSocketServer.ViewModels
             restartCommand.Subscribe(async () => await innerModel.Restart());
 
             sendCommand = new ReactiveCommand();
-            sendCommand.Subscribe(async () => await innerModel.SendAsync());
+            sendCommand.Subscribe(async () =>
+            {
+                await innerModel.SendAsync();
+            });
         }
 
         public void Dispose()

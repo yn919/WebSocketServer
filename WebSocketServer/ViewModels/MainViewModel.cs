@@ -25,9 +25,9 @@ namespace WebSocketServer.ViewModels
             await innerModel.Start();
         }
 
-        public async void End()
+        public void End()
         {
-            await innerModel.End();
+            innerModel.End();
         }
         public void Dispose()
         {

@@ -78,23 +78,20 @@ namespace WebSocketServer.Models
             catch(Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
+                Stop();
             }
         }
 
-        public async Task StopAsync()
+        public void Stop()
         {
             if (ws != null && hl != null && isConnected == true)
             {
-                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "close async", CancellationToken.None);
-                await ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "close output async", CancellationToken.None);
-
                 ws.Dispose();
                 ws = null;
 
                 wsc = null;
                 hlc = null;
 
-                hl.Stop();
                 hl.Close();
                 hl = null;
 
@@ -104,7 +101,7 @@ namespace WebSocketServer.Models
 
         public async Task Restart()
         {
-            await StopAsync();
+            Stop();
             await StartAsync();
             await StartReceiveAsync();
         }
@@ -113,7 +110,13 @@ namespace WebSocketServer.Models
         {
             if (isConnected == false) return;
 
-            byte[] sendBuffer = Encoding.UTF8.GetBytes(sendMessage);
+            byte[] sendBuffer = new byte[bufferSize];
+            byte[] stringBuffer = Encoding.UTF8.GetBytes(sendMessage);
+
+            if (bufferSize < stringBuffer.Length) return;
+
+            Array.Copy(stringBuffer, 0, sendBuffer, 0, stringBuffer.Length);
+
             ArraySegment<byte> segment = new ArraySegment<byte>(sendBuffer);
 
             await ws.SendAsync(segment, WebSocketMessageType.Text, false, CancellationToken.None);
@@ -127,25 +130,20 @@ namespace WebSocketServer.Models
 
             while (true)
             {
-                ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
-
-                WebSocketReceiveResult result = await ws.ReceiveAsync(segment, CancellationToken.None);
-
-                int count = result.Count;
-                while (!result.EndOfMessage)
+                try
                 {
-                    if (count >= buffer.Length)
-                    {
-                        await StopAsync();
-                        return;
-                    }
-                    segment = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    result = await ws.ReceiveAsync(segment, CancellationToken.None);
+                    ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
 
-                    count += result.Count;
+                    WebSocketReceiveResult result = await ws.ReceiveAsync(segment, CancellationToken.None);
+
+                    receiveMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 }
-
-                receiveMessage = Encoding.UTF8.GetString(buffer, 0, count);
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e.Message);
+                    Stop();
+                    break;
+                }
             }
         }
     }

@@ -18,11 +18,12 @@ namespace WebSocketServer.Models
         public async Task Start()
         {
             await wsServer.StartAsync();
+            await wsServer.StartReceiveAsync();
         }
 
-        public async Task End()
+        public void End()
         {
-            await wsServer.StopAsync();
+            wsServer.Stop();
         }
     }
 }
